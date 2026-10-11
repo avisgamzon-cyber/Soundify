@@ -408,8 +408,8 @@ throw new Error(data.error?.message || 'Spotify request failed (' + response.sta
 
 return response.status === 204 ? null : response.json();
 }
-
-async function spotifySearch(q, limit = 25) {
+  
+async function spotifySearch(q, limit = 10) {
 const data = await spotifyFetch(
 'https://api.spotify.com/v1/search?' +
 new URLSearchParams({q, type:'track', limit:String(limit)})
