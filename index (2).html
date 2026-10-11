@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soundify — Music for everyone</title>
+<style>
+:root{--bg:#000;--panel:#121212;--panel2:#181818;--hover:#282828;--muted:#a7a7a7;--green:#1ed760;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:#000;color:var(--white);font-family:Arial,Helvetica,sans-serif;font-size:14px;overflow:hidden}
+button,input{font:inherit}button{cursor:pointer;border:0;color:inherit}button:focus-visible,input:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.app{height:100vh;display:grid;grid-template-columns:240px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 90px;gap:8px;padding:8px}
+.sidebar{grid-row:1;display:flex;flex-direction:column;gap:8px;min-height:0}.nav,.library,.main{background:var(--panel);border-radius:8px}.nav{padding:16px 12px}.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:21px;margin:2px 8px 20px}.brand-mark{width:29px;height:29px;border-radius:50%;background:var(--green);color:#000;display:grid;place-items:center;font-size:17px}
+.nav button,.lib-head button{display:flex;align-items:center;gap:16px;background:transparent;color:var(--muted);font-weight:700;padding:10px 8px;width:100%;text-align:left;border-radius:5px}.nav button:hover,.nav button.active,.lib-head button:hover{color:#fff}.ico{width:23px;text-align:center;font-size:20px}.library{flex:1;min-height:0;padding:14px 8px;display:flex;flex-direction:column}.lib-head{display:flex;align-items:center;justify-content:space-between;padding:0 7px 12px}.lib-head button{width:auto;padding:6px 4px}.lib-head .ico{font-size:20px}.lib-tools{display:flex;gap:8px;padding:0 7px 12px}.chip{border-radius:20px;background:#232323;padding:7px 12px;color:#eee;font-size:12px}.chip:hover{background:#333}.library-items{overflow:auto}.lib-item{display:flex;gap:11px;align-items:center;padding:8px;border-radius:5px;cursor:pointer}.lib-item:hover{background:#202020}.lib-item img{width:48px;height:48px;object-fit:cover;border-radius:4px;background:#333}.lib-item strong{display:block;max-width:135px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}.lib-item small{color:var(--muted);display:block;margin-top:5px}
+.main{overflow:auto;position:relative;background:linear-gradient(180deg,#243c34 0,#171f1c 240px,var(--panel) 430px);scrollbar-color:#555 transparent}.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:16px 24px;background:rgba(12,15,14,.86);backdrop-filter:blur(12px)}.history{display:flex;gap:8px}.circle-btn{width:32px;height:32px;border-radius:50%;background:#050505;font-size:18px}.searchbox{display:flex;align-items:center;gap:10px;background:#fff;color:#222;border-radius:24px;width:min(390px,55vw);padding:0 15px;height:44px}.searchbox input{border:0;outline:0;flex:1;min-width:0;color:#111;background:transparent}.searchbox input::placeholder{color:#666}.profile{margin-left:auto;background:#050505;border-radius:20px;padding:7px 12px;font-weight:700}.content{padding:8px 24px 35px}.welcome{font-size:30px;margin:8px 0 20px;font-weight:800;letter-spacing:-1px}.quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:28px}.quick{background:rgba(255,255,255,.1);border-radius:5px;display:flex;align-items:center;gap:12px;overflow:hidden;min-height:64px;font-weight:700;cursor:pointer;transition:background .2s}.quick:hover{background:rgba(255,255,255,.2)}.quick img{width:64px;height:64px;object-fit:cover}.quick span{padding-right:6px}.section-head{display:flex;align-items:end;justify-content:space-between;margin:25px 0 14px}.section-head h2{font-size:23px;letter-spacing:-.5px;margin:0}.section-head button{background:none;color:var(--muted);font-weight:700;font-size:12px}.section-head button:hover{color:#fff}.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:15px}.card{padding:12px;border-radius:7px;background:#181818;min-width:0;cursor:pointer;transition:background .2s;position:relative}.card:hover{background:#282828}.cover-wrap{position:relative;margin-bottom:12px;aspect-ratio:1}.cover-wrap img{width:100%;height:100%;object-fit:cover;border-radius:5px;background:#333;box-shadow:0 5px 18px #0005}.play-float{position:absolute;right:8px;bottom:8px;width:45px;height:45px;border-radius:50%;background:var(--green);color:#000;font-size:19px;box-shadow:0 5px 15px #0005;opacity:0;transform:translateY(7px);transition:.2s}.card:hover .play-float{opacity:1;transform:translateY(0)}.card h3{font-size:14px;margin:0 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card p{font-size:12px;color:var(--muted);line-height:1.45;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.track-table{width:100%;border-collapse:collapse;margin-top:12px}.track-table th{text-align:left;color:var(--muted);font-weight:400;border-bottom:1px solid #ffffff1a;padding:10px 8px}.track-table td{padding:9px 8px;color:var(--muted)}.track-table tr{border-radius:4px}.track-table tbody tr:hover{background:#ffffff12}.track-table tbody tr.current{color:var(--green)}.track-title{display:flex;align-items:center;gap:12px;min-width:220px}.track-title img{width:42px;height:42px;object-fit:cover;border-radius:4px}.track-title strong{display:block;color:#fff;font-weight:500;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.track-title small{display:block;margin-top:5px;color:var(--muted)}.track-title strong:hover{color:#fff;text-decoration:underline}.row-play{background:transparent;color:#fff;font-size:16px}.like{background:transparent;color:var(--muted);font-size:18px}.like.saved{color:var(--green)}.empty{padding:30px 10px;color:var(--muted);line-height:1.6}.status{color:var(--muted);margin:12px 0}.player{grid-column:1/3;display:grid;grid-template-columns:minmax(180px,1fr) minmax(250px,1.4fr) minmax(160px,1fr);align-items:center;gap:20px;padding:0 16px;background:#000;border-top:1px solid #222}.now-playing{display:flex;align-items:center;gap:12px;min-width:0}.now-playing img{width:56px;height:56px;object-fit:cover;border-radius:4px;background:#222}.now-playing strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}.now-playing small{display:block;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.player-controls{display:flex;flex-direction:column;align-items:center;gap:8px}.control-row{display:flex;align-items:center;gap:20px}.control-row button{background:transparent;color:#b3b3b3;font-size:18px}.control-row button:hover{color:#fff}.control-row .play-main{background:#fff;color:#000;border-radius:50%;width:34px;height:34px;font-size:16px}.progress-row{display:flex;align-items:center;gap:8px;width:100%;max-width:520px;color:var(--muted);font-size:11px}.progress-row input{flex:1;accent-color:var(--green);height:4px;cursor:pointer}.volume{display:flex;align-items:center;justify-content:flex-end;gap:10px;color:var(--muted)}.volume input{width:100px;accent-color:var(--green)}.toast{position:fixed;bottom:104px;left:50%;transform:translateX(-50%);background:#2a2a2a;padding:12px 18px;border-radius:6px;box-shadow:0 4px 18px #0008;z-index:20;display:none}.modal-back{position:fixed;inset:0;background:#000a;display:none;place-items:center;z-index:30}.modal{width:min(420px,calc(100vw - 30px));background:#282828;padding:25px;border-radius:10px;box-shadow:0 15px 60px #0008}.modal h2{margin:0 0 18px}.modal input{width:100%;padding:13px;border-radius:4px;border:1px solid #777;background:#3e3e3e;color:#fff;margin-bottom:18px}.modal-actions{display:flex;justify-content:flex-end;gap:10px}.primary{background:var(--green);color:#000;border-radius:22px;padding:11px 20px;font-weight:700}.secondary{background:transparent;padding:11px 16px}.primary:hover{transform:scale(1.03)}.mobile-nav{display:none}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(4,minmax(0,1fr))}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.player{grid-template-columns:minmax(150px,1fr) minmax(230px,1.4fr) minmax(100px,.7fr)}}
+@media(max-width:760px){body{overflow:auto}.app{height:100dvh;min-height:520px;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 76px;gap:0;padding:0}.sidebar{display:none}.main{border-radius:0}.topbar{padding:12px}.content{padding:8px 15px 25px}.welcome{font-size:25px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quick{font-size:12px;min-height:55px}.quick img{width:55px;height:55px}.player{grid-column:1;grid-template-columns:1fr auto;gap:8px;padding:0 10px}.now-playing img{width:46px;height:46px}.player-controls{align-items:flex-end}.control-row{gap:10px}.control-row button:not(.play-main){display:none}.progress-row{width:170px}.volume{display:none}.track-table th:nth-child(3),.track-table td:nth-child(3){display:none}.track-title{min-width:150px}.track-title strong{max-width:190px}.mobile-nav{display:flex;position:fixed;bottom:76px;left:0;right:0;background:#111;justify-content:space-around;padding:10px 0;border-top:1px solid #292929;z-index:8}.mobile-nav button{background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px}.mobile-nav span{font-size:20px}.content{padding-bottom:100px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="nav">
+    <div class="brand"><span class="brand-mark">≋</span> soundify</div>
+    <button class="active" data-page="home"><span class="ico">⌂</span>Home</button>
+    <button data-page="search"><span class="ico">⌕</span>Search</button>
+  </div>
+  <div class="library">
+    <div class="lib-head"><button data-page="library"><span class="ico">▤</span>Your Library</button><button id="newPlaylist" title="Create playlist">＋</button></div>
+    <div class="lib-tools"><button class="chip" id="createChip">＋ Create</button><button class="chip" data-page="liked">Liked songs</button></div>
+    <div class="library-items" id="libraryItems"></div>
+  </div>
+</aside>
+<main class="main" id="main">
+  <div class="topbar">
+    <div class="history"><button class="circle-btn" id="backBtn" title="Back">‹</button><button class="circle-btn" id="forwardBtn" title="Forward">›</button></div>
+    <label class="searchbox"><span style="font-size:22px">⌕</span><input id="searchInput" placeholder="What do you want to play?" autocomplete="off"><span style="color:#777">▣</span></label>
+    <button class="profile" id="homeRemoteBtn" type="button">⌂ Home Player</button><button class="profile" id="profileBtn">● Connect Spotify</button>
+  </div>
+  <div class="content" id="content"><p class="status">Connect Spotify to start searching music…</p></div>
+</main>
+<div class="player">
+  <div class="now-playing"><img id="playerArt" alt="" src="https://placehold.co/100x100/222/fff?text=♪"><div style="min-width:0"><strong id="playerTitle">Choose a track</strong><small id="playerArtist">Your next favorite song is out there</small></div><button class="like" id="playerLike" title="Save to liked songs">♡</button></div>
+  <div class="player-controls">
+    <div class="control-row"><button id="shuffleBtn" title="Shuffle">⤨</button><button id="prevBtn" title="Previous">◀|</button><button class="play-main" id="playBtn" title="Play">▶</button><button id="nextBtn" title="Next">|▶</button><button id="repeatBtn" title="Repeat">↻</button></div>
+    <div class="progress-row"><span id="elapsed">0:00</span><input id="seek" type="range" min="0" max="1000" value="0"><span id="duration">0:00</span></div>
+  </div>
+  <div class="volume"><span>◖))</span><input id="volume" type="range" min="0" max="1" step=".01" value=".8"></div>
+</div>
+<nav class="mobile-nav"><button data-page="home"><span>⌂</span>Home</button><button data-page="search"><span>⌕</span>Search</button><button data-page="library"><span>▤</span>Library</button></nav>
+</div>
+<audio id="audio" preload="none"></audio>
+<div class="toast" id="toast"></div>
+<div class="modal-back" id="modalBack"><div class="modal"><h2>Create a playlist</h2><input id="playlistName" maxlength="60" placeholder="My awesome playlist"><div class="modal-actions"><button class="secondary" id="cancelModal">Cancel</button><button class="primary" id="savePlaylist">Create</button></div></div></div>
+<script>
+(() => {
+const API = 'https://api.spotify.com/v1';
+const SPOTIFY_AUTH = 'https://accounts.spotify.com/authorize';
+let spotifyClientId = localStorage.getItem('soundify_spotify_client_id') || '';
+let spotifyRedirectUri = localStorage.getItem('soundify_spotify_redirect_uri') || (location.protocol==='file:'?'http://127.0.0.1:5500/soundify.html':location.origin+location.pathname);
+let spotifyToken = localStorage.getItem('soundify_spotify_token') || '';
+let spotifyTokenExpiry = Number(localStorage.getItem('soundify_spotify_token_expiry')||0);
+let spotifyRefreshToken = localStorage.getItem('soundify_spotify_refresh_token') || '';
+const $ = s => document.querySelector(s);
+const audio = $('#audio');
+let apiKey = ''; // Spotify uses OAuth PKCE; no client secret belongs in this browser app.
+let tracks = [], currentList = [], currentIndex = -1, currentPage = 'home', queryTimer, shuffle = false, repeat = false;
+let activeSearchQuery = '', searchOffset = 0, searchLoading = false;
+let playlists = JSON.parse(localStorage.getItem('soundify_playlists') || '[]');
+let liked = JSON.parse(localStorage.getItem('soundify_liked') || '[]');
+let historyStack = ['home'], historyPos = 0;
+const fallbackArt = 'https://placehold.co/400x400/282828/eeeeee?text=♪';
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function art(t){return t?.album?.images?.[0]?.url || t?.artwork?.['480x480'] || t?.artwork?.['150x150'] || t?.artwork?.['1000x1000'] || fallbackArt;}
+function artist(t){return Array.isArray(t?.artists)?t.artists.map(a=>a.name).join(', '):(t?.user?.name || t?.artist || 'Unknown artist');}
+function normalizeTrack(t){return {...t,title:t.name||t.title||'Untitled',artist:Array.isArray(t.artists)?t.artists.map(a=>a.name).join(', '):(t.artist||''),duration:Number(t.duration_ms||0)/1000,play_count:t.popularity||0,spotifyUrl:t.external_urls?.spotify||`https://open.spotify.com/track/${t.id}`,artwork:{'480x480':t.album?.images?.[0]?.url||fallbackArt},preview_url:t.preview_url||null};}
+async function getSpotifyToken(){if(spotifyToken&&Date.now()<spotifyTokenExpiry-60000)return spotifyToken;if(spotifyRefreshToken&&spotifyClientId){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'refresh_token',refresh_token:spotifyRefreshToken,client_id:spotifyClientId})});if(r.ok){const d=await r.json();spotifyToken=d.access_token;spotifyTokenExpiry=Date.now()+d.expires_in*1000;localStorage.setItem('soundify_spotify_token',spotifyToken);localStorage.setItem('soundify_spotify_token_expiry',String(spotifyTokenExpiry));if(d.refresh_token){spotifyRefreshToken=d.refresh_token;localStorage.setItem('soundify_spotify_refresh_token',spotifyRefreshToken);}return spotifyToken;}}throw new Error('Spotify is not connected. Click Listener to connect your Spotify app.');}
+async function spotifyRequest(path,params={}){const token=await getSpotifyToken();const u=new URL(API+path);Object.entries(params).forEach(([k,v])=>{if(v!==undefined&&v!==null&&v!=='')u.searchParams.set(k,v)});const r=await fetch(u,{headers:{Authorization:'Bearer '+token}});if(!r.ok){if(r.status===401){spotifyToken='';localStorage.removeItem('soundify_spotify_token');}throw new Error('Spotify API returned '+r.status);}return r.json();}
+async function spotifyLogin(){spotifyClientId=(prompt('Enter your Spotify Developer App Client ID:',spotifyClientId)||'').trim();if(!spotifyClientId)return;spotifyRedirectUri=(prompt('Enter the exact Redirect URI registered in Spotify Developer Dashboard:',spotifyRedirectUri)||'').trim();if(!spotifyRedirectUri)return;localStorage.setItem('soundify_spotify_client_id',spotifyClientId);localStorage.setItem('soundify_spotify_redirect_uri',spotifyRedirectUri);const bytes=crypto.getRandomValues(new Uint8Array(64));const verifier=Array.from(bytes,b=>('0'+b.toString(16)).slice(-2)).join('');const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier));const challenge=btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');sessionStorage.setItem('soundify_spotify_verifier',verifier);const state=Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>('0'+b.toString(16)).slice(-2)).join('');sessionStorage.setItem('soundify_spotify_state',state);const u=new URL(SPOTIFY_AUTH);u.search=new URLSearchParams({client_id:spotifyClientId,response_type:'code',redirect_uri:spotifyRedirectUri,code_challenge_method:'S256',code_challenge:challenge,state,scope:'user-read-private user-read-playback-state user-modify-playback-state playlist-read-private playlist-modify-private playlist-modify-public'}).toString();location.href=u.toString();}
+async function finishSpotifyLogin(){const params=new URLSearchParams(location.search);const code=params.get('code');if(!code)return;const state=params.get('state');if(state!==sessionStorage.getItem('soundify_spotify_state')){toast('Spotify login state mismatch. Please connect again.');return;}try{const verifier=sessionStorage.getItem('soundify_spotify_verifier')||'';const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:spotifyClientId,grant_type:'authorization_code',code,redirect_uri:spotifyRedirectUri,code_verifier:verifier})});const d=await r.json();if(!r.ok)throw new Error(d.error_description||d.error||'Token exchange failed');spotifyToken=d.access_token;spotifyTokenExpiry=Date.now()+d.expires_in*1000;spotifyRefreshToken=d.refresh_token||'';localStorage.setItem('soundify_spotify_token',spotifyToken);localStorage.setItem('soundify_spotify_token_expiry',String(spotifyTokenExpiry));if(spotifyRefreshToken)localStorage.setItem('soundify_spotify_refresh_token',spotifyRefreshToken);history.replaceState({},document.title,location.pathname);toast('Connected to Spotify!');}catch(e){toast('Spotify login failed: '+e.message);}}
+function fmt(n){n=Math.max(0,Math.floor(Number(n)||0));return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');}
+function toast(s){const el=$('#toast');el.textContent=s;el.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.display='none',2400);}
+function persist(){localStorage.setItem('soundify_playlists',JSON.stringify(playlists));localStorage.setItem('soundify_liked',JSON.stringify(liked));renderLibrary();}
+async function fetchTrending(){
+  const pages=await Promise.all([2025,2024].map(year=>spotifyRequest('/search',{q:'year:'+year,type:'track',limit:10,offset:0,market:'US'})));
+  const all=pages.flatMap(d=>(d.tracks?.items||[]).map(normalizeTrack));
+  return all.filter((t,i,a)=>a.findIndex(x=>x.id===t.id)===i).sort((a,b)=>(b.popularity||0)-(a.popularity||0));
+}
+function setPage(page, push=true){
+  currentPage=page;
+  if(push){historyStack=historyStack.slice(0,historyPos+1);historyStack.push(page);historyPos++;}
+  document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  if(page==='home') renderHome();
+  else if(page==='search') renderSearchIntro();
+  else if(page==='library') renderLibraryPage();
+  else if(page==='liked') renderLiked();
+  else if(page.startsWith('playlist:')) renderPlaylist(page.split(':')[1]);
+}
+function trackCard(t,i){return `<article class="card" data-play-index="${i}"><div class="cover-wrap"><img loading="lazy" src="${esc(art(t))}" alt=""><button class="play-float" data-play-index="${i}" title="Play">▶</button></div><h3>${esc(t.title||'Untitled')}</h3><p>${esc(artist(t))}</p></article>`;}
+function renderHome(){
+  $('#content').innerHTML=`<h1 class="welcome">Good ${new Date().getHours()<12?'morning':new Date().getHours()<18?'afternoon':'evening'}</h1><div class="quick-grid" id="quickGrid"><div class="quick"><img src="${fallbackArt}"><span>Liked Songs</span></div><div class="quick"><img src="${fallbackArt}"><span>Discover something new</span></div><div class="quick"><img src="${fallbackArt}"><span>Your playlists</span></div></div><div class="section-head"><h2>Made for music lovers</h2><button id="seeTrending">SHOW ALL</button></div><div class="cards" id="homeCards"><p class="status">Connect Spotify to load popular music…</p></div><div class="section-head"><h2>Trending this week</h2><button id="refreshTrending">REFRESH</button></div><div class="cards" id="trendingCards"><p class="status">Loading popular tracks…</p></div><p class="status" id="homeStatus"></p>`;
+  $('#quickGrid').innerHTML=`<div class="quick" data-page="liked"><img src="${liked[0]?esc(art(liked[0])):fallbackArt}"><span>Liked Songs</span></div><div class="quick" data-page="search"><img src="${fallbackArt}"><span>Discover new music</span></div><div class="quick" data-page="library"><img src="${fallbackArt}"><span>Your playlists</span></div>`;
+  fetchTrending().then(data=>{
+    tracks=data; currentList=data;
+    const cards=data.slice(0,10).map(trackCard).join('');
+    $('#homeCards').innerHTML=cards||'<p class="status">No tracks returned. Connect Spotify and try Search.</p>';
+    $('#trendingCards').innerHTML=data.slice(10,20).map((t,i)=>trackCard(t,i+10)).join('')||'<p class="status">No trending tracks available right now.</p>';
+    $('#seeTrending').onclick=()=>renderTrackResults('Trending tracks',data);
+  }).catch(e=>{$('#homeCards').innerHTML=`<p class="status">Could not load Spotify music. Connect your Spotify Developer app using the Listener button.</p>`;$('#trendingCards').innerHTML='';});
+  $('#refreshTrending').onclick=()=>{renderHome();};
+}
+function renderSearchIntro(){
+  $('#content').innerHTML=`<h1 class="welcome">Search</h1><p class="status">Search Spotify’s catalog. Typo-tolerant search puts the closest matches first; try an artist, track title, or mood.</p><div class="section-head"><h2>Browse by mood</h2></div><div class="quick-grid">${[['Chill','#315b55'],['Electronic','#5a3476'],['Hip-Hop','#8b5b25'],['Indie','#365b83'],['Dance','#8c3150'],['Focus','#376e4b']].map(([x,c])=>`<div class="quick mood" data-query="${x}" style="background:${c};padding:18px;font-size:17px">${x}</div>`).join('')}</div><div id="searchResults"></div>`;
+  document.querySelectorAll('.mood').forEach(b=>b.onclick=()=>{ $('#searchInput').value=b.dataset.query;search(b.dataset.query);});
+  $('#searchInput').focus();
+}
+function cleanSearchText(s=''){return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
+function editDistance(a,b){a=cleanSearchText(a);b=cleanSearchText(b);const row=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let prev=row[0];row[0]=i;for(let j=1;j<=b.length;j++){const old=row[j];row[j]=Math.min(row[j]+1,row[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));prev=old;}}return row[b.length];}
+function textSimilarity(a,b){a=cleanSearchText(a);b=cleanSearchText(b);if(!a||!b)return 0;if(a===b)return 1;return Math.max(0,1-editDistance(a,b)/Math.max(a.length,b.length));}
+function trackMatchScore(t,q){const query=cleanSearchText(q), title=cleanSearchText(t.title||''), name=cleanSearchText(artist(t));const qt=query.split(' ').filter(Boolean), tt=(title+' '+name).split(' ').filter(Boolean);if(!query)return 0;let tokenScore=qt.length?qt.reduce((sum,w)=>sum+Math.max(0,...tt.map(v=>textSimilarity(w,v))),0)/qt.length:0;return Math.max(textSimilarity(query,title),textSimilarity(query,name)*.92,tokenScore*.88, textSimilarity(query,title+' '+name)*.98);}
+async function fetchTrackSearch(query,limit=10,offset=0){const data=await spotifyRequest('/search',{q:query,type:'track',limit:Math.min(10,limit),offset:Math.min(1000,offset),market:'US'});return (data.tracks?.items||[]).map(normalizeTrack);}
+async function search(q){
+  currentPage='search';q=String(q||'').trim();activeSearchQuery=q;searchOffset=0;searchLoading=false;
+  $('#content').innerHTML=`<h1 class="welcome">Search results</h1><p class="status">Searching Spotify for “${esc(q)}”…</p><div id="searchResults"></div>`;
+  if(!q){renderSearchIntro();return;}
+  try{
+    // Search Spotify’s catalog in pages of up to 10 tracks per request.
+    let arr=await fetchTrackSearch(q,10,0);searchOffset=arr.length;let didCorrect=false;
+    // If the exact phrase returns nothing or weak matches, search individual words and rank
+    // the combined candidates locally so common misspellings still lead to the closest song.
+    const bestInitial=arr.reduce((best,t)=>Math.max(best,trackMatchScore(t,q)),0);
+    if(arr.length===0||bestInitial<.42){
+      const words=cleanSearchText(q).split(' ').filter(w=>w.length>1).slice(0,4);
+      const extra=await Promise.all(words.map(w=>fetchTrackSearch(w,10).catch(()=>[])));
+      const seen=new Set(arr.map(t=>String(t.id)));
+      for(const group of extra)for(const t of group)if(t&&t.id!=null&&!seen.has(String(t.id))){seen.add(String(t.id));arr.push(t);}
+      if(arr.length)didCorrect=true;
+    }
+    arr=arr.map(t=>({...t,__matchScore:trackMatchScore(t,q)})).sort((a,b)=>b.__matchScore-a.__matchScore);
+    tracks=arr;
+    if(didCorrect&&arr.length&&arr[0].__matchScore>=.2){
+      const closest=arr[0];
+      renderTrackResults(`Closest matches for “${q}”`,arr);
+      const head=$('#content').querySelector('.section-head');
+      if(head)head.insertAdjacentHTML('beforebegin',`<p class="status">Showing the closest matches first. Best match: <strong style="color:#fff">${esc(closest.title||'Untitled')}</strong> by ${esc(artist(closest))}</p>`);
+    }else renderTrackResults(`Results for “${q}”`,arr);
+  }catch(e){$('#content').innerHTML=`<h1 class="welcome">Search results</h1><p class="status">Search failed. Please try again in a moment.</p>`;}
+}
+function renderTrackResults(title,arr){
+  currentList=arr;
+  const canLoadMore=currentPage==='search'&&!!activeSearchQuery&&arr.length>=10&&searchOffset<1000;
+  $('#content').innerHTML=`<h1 class="welcome">${esc(title)}</h1><div class="section-head"><h2>Songs</h2><span class="status">${arr.length} tracks loaded</span></div><table class="track-table"><thead><tr><th style="width:35px">#</th><th>Title</th><th>Plays</th><th style="width:75px">Save</th><th style="width:70px">Time</th></tr></thead><tbody>${arr.map((t,i)=>`<tr data-play-index="${i}"><td><button class="row-play" data-play-index="${i}">▶</button></td><td><div class="track-title"><img loading="lazy" src="${esc(art(t))}" alt=""><div><strong>${esc(t.title||'Untitled')}</strong><small>${esc(artist(t))}</small></div></div></td><td>${Number(t.play_count||0).toLocaleString()}</td><td><button class="like ${isLiked(t)?'saved':''}" data-like-id="${esc(t.id)}" title="Like">${isLiked(t)?'♥':'♡'}</button></td><td>${fmt(t.duration)}</td></tr>`).join('')}</tbody></table>${arr.length?'':'<p class="empty">No tracks found. Try a different search.</p>'}${canLoadMore?`<div style="display:flex;justify-content:center;padding:24px"><button id="loadMoreTracks" class="primary" ${searchLoading?'disabled':''}>${searchLoading?'Loading…':'LOAD MORE SONGS'}</button></div><p class="status" style="text-align:center">More results are loaded from Spotify when you click above. Spotify limits search paging to its supported range.</p>`:''}`;
+  const more=$('#loadMoreTracks');if(more)more.onclick=loadMoreSearch;
+}
+async function loadMoreSearch(){
+  if(searchLoading||!activeSearchQuery)return;searchLoading=true;
+  const btn=$('#loadMoreTracks');if(btn){btn.disabled=true;btn.textContent='Loading…';}
+  try{
+    const page=await fetchTrackSearch(activeSearchQuery,10,searchOffset);
+    if(!page.length){const b=$('#loadMoreTracks');if(b)b.parentElement.innerHTML='<p class="status">No more results were returned by Spotify for this search.</p>';searchLoading=false;return;}
+    const seen=new Set(currentList.map(t=>String(t.id)));let added=0;
+    for(const t of page){if(t&&t.id!=null&&!seen.has(String(t.id))){seen.add(String(t.id));currentList.push(t);added++;}}
+    searchOffset+=page.length;tracks=currentList;
+    if(added===0&&page.length<10){searchLoading=false;renderTrackResults(`Results for “${activeSearchQuery}”`,currentList);const b=$('#loadMoreTracks');if(b)b.parentElement.innerHTML='<p class="status">No more unique tracks found for this search.</p>';return;}
+    searchLoading=false;renderTrackResults(`Results for “${activeSearchQuery}”`,currentList);
+  }catch(e){searchLoading=false;const b=$('#loadMoreTracks');if(b){b.disabled=false;b.textContent='RETRY LOADING SONGS';b.onclick=loadMoreSearch;}toast('Could not load more tracks. Try again.');}
+}
+function renderLibrary(){const el=$('#libraryItems');if(!el)return;el.innerHTML=playlists.map(p=>`<div class="lib-item" data-page="playlist:${p.id}"><img src="${esc(p.tracks[0]?art(p.tracks[0]):fallbackArt)}"><div><strong>${esc(p.name)}</strong><small>Playlist · ${p.tracks.length} songs</small></div></div>`).join('')+`<div class="lib-item" data-page="liked"><img src="${liked[0]?esc(art(liked[0])):fallbackArt}"><div><strong>Liked Songs</strong><small>Playlist · ${liked.length} songs</small></div></div>`;}
+function renderLibraryPage(){renderLibrary();$('#content').innerHTML=`<h1 class="welcome">Your Library</h1><div class="section-head"><h2>Playlists</h2><button id="libraryCreate">＋ CREATE PLAYLIST</button></div><div class="cards">${playlists.map(p=>`<article class="card" data-page="playlist:${p.id}"><div class="cover-wrap"><img src="${esc(p.tracks[0]?art(p.tracks[0]):fallbackArt)}"></div><h3>${esc(p.name)}</h3><p>${p.tracks.length} songs · Created by you</p></article>`).join('')}</div>${playlists.length?'':'<p class="empty">Your playlists will show up here. Create one, then add tracks from Search.</p>'}`;$('#libraryCreate').onclick=openModal;}
+function renderLiked(){renderTrackResults('Liked Songs',liked);}
+function renderPlaylist(id){const p=playlists.find(x=>x.id===id);if(!p){setPage('library',false);return;}renderTrackResults(p.name,p.tracks);$('#content').insertAdjacentHTML('afterbegin',`<div class="section-head"><span class="status">Playlist · Created by you</span><button id="deletePlaylist">DELETE PLAYLIST</button></div>`);$('#deletePlaylist').onclick=()=>{if(confirm(`Delete “${p.name}”?`)){playlists=playlists.filter(x=>x.id!==id);persist();setPage('library');}};}
+function isLiked(t){return liked.some(x=>String(x.id)===String(t.id));}
+function toggleLike(t){if(!t)return;if(isLiked(t)){liked=liked.filter(x=>String(x.id)!==String(t.id));toast('Removed from Liked Songs');}else{liked.unshift(t);toast('Added to Liked Songs');}persist();if(currentPage==='liked')renderLiked();else if(currentPage.startsWith('playlist:')||currentPage==='search')renderTrackResults(currentPage==='search'?'Search results':(playlists.find(p=>p.id===currentPage.split(':')[1])?.name||'Songs'),currentList);$('#playerLike').textContent=isLiked(t)?'♥':'♡';$('#playerLike').classList.toggle('saved',isLiked(t));}
+function openModal(){$('#modalBack').style.display='grid';$('#playlistName').value='';$('#playlistName').focus();}
+function closeModal(){$('#modalBack').style.display='none';}
+function createPlaylist(){const name=$('#playlistName').value.trim();if(!name){$('#playlistName').focus();return;}const p={id:Date.now().toString(36),name,tracks:[]};playlists.unshift(p);persist();closeModal();toast('Playlist created');setPage('playlist:'+p.id);}
+async function playTrack(list,index){
+  if(!list?.length)return;currentList=list;currentIndex=Math.max(0,Math.min(index,list.length-1));const t=list[currentIndex];
+  $('#playerTitle').textContent=t.title||'Untitled';$('#playerArtist').textContent=artist(t);$('#playerArt').src=art(t);$('#playerLike').textContent=isLiked(t)?'♥':'♡';$('#playerLike').classList.toggle('saved',isLiked(t));$('#playBtn').textContent='Ⅱ';
+  try{if(t.preview_url){audio.src=t.preview_url;audio.volume=Number($('#volume').value);await audio.play();toast('Playing preview');}else{audio.pause();audio.removeAttribute('src');$('#playBtn').textContent='▶';window.open(t.spotifyUrl||`https://open.spotify.com/track/${encodeURIComponent(t.id)}`,'_blank','noopener');toast('Opening full track in Spotify');}}catch(e){$('#playBtn').textContent='▶';window.open(t.spotifyUrl||`https://open.spotify.com/track/${encodeURIComponent(t.id)}`,'_blank','noopener');toast('Opening track in Spotify');}
+}
+function playNext(dir=1){if(!currentList.length)return;let i;if(shuffle)i=Math.floor(Math.random()*currentList.length);else i=(currentIndex+dir+currentList.length)%currentList.length;playTrack(currentList,i);}
+function renderSearchResultsWhenReady(q){if(q.trim())search(q);else renderSearchIntro();}
+$('#searchInput').addEventListener('input',e=>{clearTimeout(queryTimer);const q=e.target.value;queryTimer=setTimeout(()=>{if(currentPage==='search'||q.trim())renderSearchResultsWhenReady(q);},350);});
+$('#searchInput').addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(queryTimer);search(e.target.value);}if(e.key==='Escape'){e.target.value='';renderSearchIntro();}});
+document.addEventListener('click',e=>{
+ const pg=e.target.closest('[data-page]');if(pg){setPage(pg.dataset.page);return;}
+ const play=e.target.closest('[data-play-index]');if(play){const i=Number(play.dataset.playIndex);playTrack(currentList,i);return;}
+ const like=e.target.closest('[data-like-id]');if(like){const t=currentList.find(x=>String(x.id)===String(like.dataset.likeId));toggleLike(t);return;}
+});
+$('#newPlaylist').onclick=openModal;$('#createChip').onclick=openModal;$('#cancelModal').onclick=closeModal;$('#savePlaylist').onclick=createPlaylist;$('#modalBack').addEventListener('click',e=>{if(e.target.id==='modalBack')closeModal();});$('#playlistName').addEventListener('keydown',e=>{if(e.key==='Enter')createPlaylist();if(e.key==='Escape')closeModal();});
+$('#playBtn').onclick=async()=>{if(!audio.src){if(currentList.length)playTrack(currentList,Math.max(0,currentIndex));else if(tracks.length)playTrack(tracks,0);return;}if(audio.paused){try{await audio.play();$('#playBtn').textContent='Ⅱ';}catch(e){toast('Press play on a track first.');}}else{audio.pause();$('#playBtn').textContent='▶';}};
+$('#nextBtn').onclick=()=>playNext(1);$('#prevBtn').onclick=()=>{if(audio.currentTime>3)audio.currentTime=0;else playNext(-1);};$('#shuffleBtn').onclick=()=>{shuffle=!shuffle;$('#shuffleBtn').style.color=shuffle?'var(--green)':'';toast(shuffle?'Shuffle on':'Shuffle off');};$('#repeatBtn').onclick=()=>{repeat=!repeat;$('#repeatBtn').style.color=repeat?'var(--green)':'';toast(repeat?'Repeat one on':'Repeat off');};
+$('#playerLike').onclick=()=>toggleLike(currentList[currentIndex]);$('#volume').oninput=e=>audio.volume=Number(e.target.value);
+audio.addEventListener('timeupdate',()=>{if(audio.duration){$('#seek').value=audio.currentTime/audio.duration*1000;$('#elapsed').textContent=fmt(audio.currentTime);$('#duration').textContent=fmt(audio.duration);}});
+$('#seek').oninput=e=>{if(audio.duration)audio.currentTime=Number(e.target.value)/1000*audio.duration;};audio.addEventListener('ended',()=>{if(repeat){audio.currentTime=0;audio.play();}else playNext(1);});audio.addEventListener('play',()=>$('#playBtn').textContent='Ⅱ');audio.addEventListener('pause',()=>$('#playBtn').textContent='▶');
+$('#backBtn').onclick=()=>{if(historyPos>0){historyPos--;setPage(historyStack[historyPos],false);}};$('#forwardBtn').onclick=()=>{if(historyPos<historyStack.length-1){historyPos++;setPage(historyStack[historyPos],false);}};
+$('#profileBtn').onclick=()=>spotifyLogin().catch(e=>toast('Could not start Spotify login: '+e.message));
+(async()=>{await finishSpotifyLogin();renderLibrary();if(!spotifyToken&&!new URLSearchParams(location.search).has('code')){renderSearchIntro();$('#content').insertAdjacentHTML('afterbegin',`<div style="padding:16px 18px;background:#252525;border-radius:8px;margin-bottom:18px"><strong>Connect your Spotify account</strong><p class="status">Click <b>● Listener</b> in the top-right to connect. You’ll need a Spotify Developer app Client ID and a registered redirect URI.</p><p class="status">Spotify API provides catalog search and metadata. Full-length playback happens in Spotify; this page can open the matching Spotify track.</p></div>`);}else setPage('home',false);})();
+})();
+</script>
+
+<style>
+#homeRemotePanel{position:fixed;right:18px;top:70px;width:min(390px,calc(100vw - 24px));max-height:78vh;overflow:auto;background:#181818;border:1px solid #383838;border-radius:12px;padding:18px;z-index:100;box-shadow:0 18px 60px #000b;display:none;color:#fff}
+#homeRemotePanel h2{font-size:20px;margin:0 0 8px}#homeRemotePanel p{color:#bbb;line-height:1.45;font-size:12px}#homeRemotePanel input{width:100%;padding:11px;border-radius:6px;border:1px solid #555;background:#292929;color:white;margin:5px 0 10px}#homeRemotePanel button{border-radius:20px;padding:9px 13px;background:#1ed760;color:#000;font-weight:700;margin:3px 3px 3px 0}#homeRemotePanel button.secondary{background:#333;color:#fff}#homeRemoteStatus{color:#ccc;font-size:12px;margin:10px 0;white-space:pre-wrap}#homeRemoteResults button{display:block;width:100%;text-align:left;border-radius:6px;background:#292929;color:white;margin:7px 0;padding:10px}#homeRemoteResults small{display:block;color:#aaa;margin-top:4px}
+</style>
+<section id="homeRemotePanel" aria-label="Home Spotify remote control">
+  <h2>Home Player</h2>
+  <p>Control Spotify playing on your home computer. Enter the private Tailscale HTTPS address and the remote password configured on that computer.</p>
+  <label for="homeRemoteUrl">Home service URL</label><input id="homeRemoteUrl" placeholder="https://your-home-device.tailnet.ts.net" autocomplete="url">
+  <label for="homeRemotePassword">Remote password</label><input id="homeRemotePassword" type="password" placeholder="Your private remote password" autocomplete="current-password">
+  <div><button id="homeRemoteSave">Connect</button><button class="secondary" id="homeRemoteSpotify">Authorize Spotify on home computer</button><button class="secondary" id="homeRemoteClose">Close</button></div>
+  <div id="homeRemoteStatus">Not connected.</div>
+  <div><input id="homeRemoteQuery" placeholder="Search songs or artists"><button id="homeRemoteSearch">Search</button></div>
+  <div id="homeRemoteTransport"><button id="homeRemotePrev">⏮ Previous</button><button id="homeRemoteToggle">▶ Play / Pause</button><button id="homeRemoteNext">Next ⏭</button></div>
+  <div id="homeRemoteResults"></div>
+</section>
+<script>
+(()=>{
+ const $=id=>document.getElementById(id), panel=$('homeRemotePanel');
+ $('homeRemoteUrl').value=localStorage.getItem('soundify_home_remote_url')||'';
+ $('homeRemotePassword').value=sessionStorage.getItem('soundify_home_remote_password')||'';
+ const base=()=> $('homeRemoteUrl').value.trim().replace(/\/$/,'');
+ async function call(path,body){
+   if(!base())throw new Error('Enter your home service URL first.');
+   const headers={'x-remote-password':$('homeRemotePassword').value};
+   if(body){headers['Content-Type']='application/json';}
+   const r=await fetch(base()+path,{method:body?'POST':'GET',headers,body:body?JSON.stringify(body):undefined});
+   const data=await r.json().catch(()=>({}));
+   if(!r.ok)throw new Error(data.error||('Request failed ('+r.status+'). Check the URL, password, and home service.'));
+   return data;
+ }
+ function status(msg){$('homeRemoteStatus').textContent=msg;}
+ async function connect(){localStorage.setItem('soundify_home_remote_url',base());sessionStorage.setItem('soundify_home_remote_password',$('homeRemotePassword').value);try{const d=await call('/api/status');status(d.connected?'Connected to Spotify on home computer.':'Home service reachable; Spotify still needs authorization.');}catch(e){status(e.message);}}
+ $('homeRemoteBtn').onclick=()=>{panel.style.display=panel.style.display==='block'?'none':'block';};
+ $('homeRemoteClose').onclick=()=>panel.style.display='none';
+ $('homeRemoteSave').onclick=connect;
+ $('homeRemoteSpotify').onclick=()=>{if(!base()){status('Enter your home service URL first.');return;}window.open(base()+'/login','_blank','noopener');};
+ $('homeRemoteSearch').onclick=async()=>{const q=$('homeRemoteQuery').value.trim();if(!q)return;try{status('Searching…');const d=await call('/api/search?q='+encodeURIComponent(q));const el=$('homeRemoteResults');el.replaceChildren();(d.tracks||[]).forEach(t=>{const b=document.createElement('button');b.textContent=t.name+' — '+t.artists.map(a=>a.name).join(', ');const sm=document.createElement('small');sm.textContent=t.album?.name||'';b.appendChild(sm);b.onclick=async()=>{try{await call('/api/play',{uri:t.uri});status('Requested playback on home computer: '+t.name);}catch(e){status(e.message);}};el.appendChild(b);});if(!d.tracks?.length)status('No tracks found.');else status('Choose a track to play at home.');}catch(e){status(e.message);}};
+ $('homeRemoteQuery').addEventListener('keydown',e=>{if(e.key==='Enter')$('homeRemoteSearch').click();});
+ $('homeRemotePrev').onclick=async()=>{try{await call('/api/action',{action:'previous'});status('Previous track requested.');}catch(e){status(e.message);}};
+ $('homeRemoteNext').onclick=async()=>{try{await call('/api/action',{action:'next'});status('Next track requested.');}catch(e){status(e.message);}};
+ $('homeRemoteToggle').onclick=async()=>{try{const d=await call('/api/action',{action:'toggle'});status(d.message||'Playback toggled.');}catch(e){status(e.message);}};
+})();
+</script>
+
+</body>
+</html>
