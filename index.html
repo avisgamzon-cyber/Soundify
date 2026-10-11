@@ -410,6 +410,9 @@ return response.status === 204 ? null : response.json();
 }
   
 async function spotifySearch(q, limit = 10) {
+  limit = 10;
+
+  // Keep the rest of your existing code below unchanged
 const data = await spotifyFetch(
 'https://api.spotify.com/v1/search?' +
 new URLSearchParams({q, type:'track', limit:String(limit)})
